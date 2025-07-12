@@ -5,8 +5,8 @@
     <classes>
       <class name="login.MyTestcases">
         <methods>
-          <include name="Login"/>
           <include name="mySetup"/>
+          <include name="addItemToThecart"/>
         </methods>
       </class> <!-- login.MyTestcases -->
     </classes>

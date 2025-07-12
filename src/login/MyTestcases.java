@@ -1,6 +1,8 @@
 package login;
 
 import java.awt.Checkbox;
+import java.time.Duration;
+import java.util.List;
 import java.util.Random;
 
 import org.openqa.selenium.By;
@@ -14,11 +16,12 @@ import org.testng.annotations.Test;
 public class MyTestcases {
 
 	WebDriver driver = new ChromeDriver();
-	String username ; 
+	String username;
 	String TheLoginPassword = "Ahmad123!@#$";
 
 	String TheURL = "https://automationteststore.com/";
 	Random rand = new Random();
+	String SpecialItemThatNeedTreatment = "https://automationteststore.com/index.php?rt=product/product&product_id=116";
 
 	@BeforeTest
 	public void mySetup() {
@@ -27,9 +30,11 @@ public class MyTestcases {
 
 		driver.manage().window().maximize();
 
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
+
 	}
 
-	@Test(priority = 1,enabled = true)
+	@Test(priority = 1, enabled = false)
 
 	public void SignUp() throws InterruptedException {
 
@@ -58,7 +63,7 @@ public class MyTestcases {
 
 		// data
 
-		int randomNumberForTheEmail = rand.nextInt(9800);
+		int randomNumberForTheEmail = rand.nextInt(19800);
 
 		String[] firstNames = { "anas", "mohammad", "omar", "ali" };
 		int randomNameIndexForFirstNames = rand.nextInt(firstNames.length);
@@ -108,38 +113,67 @@ public class MyTestcases {
 		Select myselectForState = new Select(state);
 		int randomState = rand.nextInt(1, numberofstates);
 		myselectForState.selectByIndex(randomState);
-		
-		username=randomFirstName+randomLastName+randomNumberForTheEmail ; 
+
+		username = randomFirstName + randomLastName + randomNumberForTheEmail;
 		LoginName.sendKeys(username);
 		PasswordInput.sendKeys(TheLoginPassword);
-		PasswordConfirmInput.sendKeys(TheLoginPassword); 
-		
+		PasswordConfirmInput.sendKeys(TheLoginPassword);
+
 		CheckBox.click();
 		ContinueButton.click();
-		String myname = "ahmad";;
+		String myname = "ahmad";
+		;
 	}
-	
-	@Test(priority = 2,enabled = true)
+
+	@Test(priority = 2, enabled = false)
 	public void Logout() throws InterruptedException {
-		
+
 		Thread.sleep(2000);
 		WebElement Logout = driver.findElement(By.linkText("Logoff"));
-		
+
 		Logout.click();
 	}
-	
-	@Test(priority = 3)
+
+	@Test(priority = 3, enabled = false)
 	public void Login() {
-		WebElement Loginorregister=driver.findElement(By.partialLinkText("Login or re"));
+		WebElement Loginorregister = driver.findElement(By.partialLinkText("Login or re"));
 		Loginorregister.click();
-		
+
 		WebElement Login = driver.findElement(By.id("loginFrm_loginname"));
 		WebElement password = driver.findElement(By.id("loginFrm_password"));
-		
+
 		Login.sendKeys(username);
 		password.sendKeys(TheLoginPassword);
 
 		driver.findElement(By.xpath("//button[@title='Login']")).click();
 	}
 
+	@Test(priority = 4)
+
+	public void addItemToThecart() throws InterruptedException {
+		driver.navigate().to("https://automationteststore.com/");
+		String[] sectionsNames = { "featured", "latest", "bestseller", "special" };
+		int randomSectionIndex = rand.nextInt(sectionsNames.length);
+		WebElement TheFeatured = driver.findElement(By.id(sectionsNames[randomSectionIndex]));
+		List<WebElement> AllItems = TheFeatured.findElements(By.className("prdocutname"));
+		int randomProduct = rand.nextInt(AllItems.size());
+		AllItems.get(randomProduct).click();
+		Thread.sleep(2000);
+
+		String ProductPage = driver.findElement(By.className("productpagecart")).getText();
+
+		if (ProductPage.equals("Out of Stock")) {
+			driver.navigate().back();
+			System.out.println("sorry the item is not available");
+		} else {
+			System.out.println(driver.getCurrentUrl());
+			if (driver.getCurrentUrl().contains("product_id=116")) {
+				Thread.sleep(2000);
+				System.out.println("@@@@@@@@@@@@@");
+				driver.findElement(By.xpath("//label[@for='option344747']")).click();
+
+			}
+			driver.findElement(By.partialLinkText("Add to Cart")).click();
+		}
+	}
 }
